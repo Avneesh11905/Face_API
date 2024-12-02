@@ -33,6 +33,8 @@ yarn-error.log*
 .env*
 /api/venv
 /api/dlib
+/api/requirements.txt
+/api/test.py
 
 # vercel
 .vercel
