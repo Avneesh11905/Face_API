@@ -40,7 +40,7 @@ export default function FileUpload() {
 
   return (
 
-    <Card radius={10} className='gap-5'>
+    <Card radius={10} className='gap-5 min-w-[20vw]'>
       <Title className='justify-self-center self-center' order={2}>Organiser</Title>
       <FileInput
         placeholder="Choose .zip File to Upload"

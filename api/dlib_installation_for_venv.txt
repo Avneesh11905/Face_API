@@ -16,7 +16,10 @@ sudo ldconfig
 cd ..
 sudo apt install -y libjpeg-dev libpng-dev libopenblas-dev
 python3 setup.py install
-cd ../..
+
+
+##Later install the requirements
+
 pip install -r requirements.txt	
 
 

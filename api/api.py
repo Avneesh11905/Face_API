@@ -30,9 +30,9 @@ def zip_folder(folder_path, output_path):
     """
     Compresses the contents of a folder into a .zip file.Then deletes the folder at folder_path
 
-    Args:
-    - folder_path: The path to the folder to be zipped.
-    - output_path: The path where the zip file will be created.
+        args:
+            folder_path: The path to the folder to be zipped.
+            output_path: The path where the zip file will be created.
     """
     # Create a ZipFile object in write mode
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -160,7 +160,7 @@ def process_image(img_path):
     
         img_name = os.path.basename(img_path)
         image = fr.load_image_file(img_path)
-        img_loc = fr.face_locations(image,2)
+        img_loc = fr.face_locations(image,0)
         img_encodings = fr.face_encodings(image, img_loc )
         encoding_list = [list(encoding) for encoding in img_encodings]
         print(img_name)
@@ -211,19 +211,27 @@ async def upload_folder(file: UploadFile = File(...)):
     max_worker = os.cpu_count()-4
     results =[]
     length = len(image_paths)
-    img_num = 4
+    img_num = 20    
 
     print(f'Start processing...{time.ctime()}')
-    for idx in range(0,len(image_paths),img_num):
-        num_img = image_paths[idx:idx+img_num]
-        with ProcessPoolExecutor(max_workers=max_worker) as executor:
-            futures = {executor.submit(process_image, img_path): img_path for img_path in num_img}
+    # for idx in range(0,len(image_paths),img_num):
+    #     num_img = image_paths[idx:idx+img_num]
+    #     with ProcessPoolExecutor(max_workers=max_worker) as executor:
+    #         futures = {executor.submit(process_image, img_path): img_path for img_path in num_img}
             
-            # Collect results and insert them into MongoDB
-            for future in as_completed(futures):
-                result = future.result()
-                if result:  # Only insert valid results
-                    results.append(result)
+    #         # Collect results and insert them into MongoDB
+    #         for future in as_completed(futures):
+    #             result = future.result()
+    #             if result:  # Only insert valid results
+    #                 results.append(result)
+    with ProcessPoolExecutor(max_workers=max_worker) as executor:
+        futures = {executor.submit(process_image, img_path): img_path for img_path in image_paths}
+        
+        # Collect results and insert them into MongoDB
+        for future in as_completed(futures):
+            result = future.result()
+            if result:  # Only insert valid results
+                results.append(result)
     # results =[]
     # for root, _, files in os.walk(UPLOAD_INSTANCE):
     #     length = len(files)
