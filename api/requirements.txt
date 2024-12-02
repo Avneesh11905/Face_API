@@ -1,4 +1,0 @@
-tensorflow[and-cuda]
-tf-keras
-retina-face
-deepface
