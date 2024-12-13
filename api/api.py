@@ -227,7 +227,7 @@ async def upload_folder(file: UploadFile = File(...)):
     #with ProcessPoolExecutor(max_workers=max_worker) as executor:
     #    futures = {executor.submit(process_image, img_path): img_path for img_path in image_paths}
         
-        # Collect results and insert them into MongoDB
+    #    # Collect results and insert them into MongoDB
     #    for future in as_completed(futures):
     #        result = future.result()
     #        if result:  # Only insert valid results
