@@ -211,37 +211,28 @@ async def upload_folder(file: UploadFile = File(...)):
     max_worker = os.cpu_count()-4
     results =[]
     length = len(image_paths)
-    img_num = 20    
+    img_num = 12    
 
     print(f'Start processing...{time.ctime()}')
-    # for idx in range(0,len(image_paths),img_num):
-    #     num_img = image_paths[idx:idx+img_num]
-    #     with ProcessPoolExecutor(max_workers=max_worker) as executor:
-    #         futures = {executor.submit(process_image, img_path): img_path for img_path in num_img}
-            
-    #         # Collect results and insert them into MongoDB
-    #         for future in as_completed(futures):
-    #             result = future.result()
-    #             if result:  # Only insert valid results
-    #                 results.append(result)
-    with ProcessPoolExecutor(max_workers=max_worker) as executor:
-        futures = {executor.submit(process_image, img_path): img_path for img_path in image_paths}
+    for idx in range(0,len(image_paths),img_num):
+        num_img = image_paths[idx:idx+img_num]
+        with ProcessPoolExecutor(max_workers=max_worker) as executor:
+            futures = {executor.submit(process_image, img_path): img_path for img_path in num_img}
+           
+            # Collect results and insert them into MongoDB
+            for future in as_completed(futures):
+                result = future.result()
+                if result:  # Only insert valid results
+                    results.append(result)
+    #with ProcessPoolExecutor(max_workers=max_worker) as executor:
+    #    futures = {executor.submit(process_image, img_path): img_path for img_path in image_paths}
         
         # Collect results and insert them into MongoDB
-        for future in as_completed(futures):
-            result = future.result()
-            if result:  # Only insert valid results
-                results.append(result)
-    # results =[]
-    # for root, _, files in os.walk(UPLOAD_INSTANCE):
-    #     length = len(files)
-    #     for file_name in files:
-    #         if file_name.split('.')[-1] not in ['jpg', 'png', 'jpeg','JPG','PNG','JPEG']:
-    #             delete_folder(UPLOAD_INSTANCE)
-    #             return JSONResponse(content={'err':"Zip file should only contain images"})
-    #         img_path = f'{root}/{file_name}'
-    #         results.append(process_image(img_path))
-
+    #    for future in as_completed(futures):
+    #        result = future.result()
+    #        if result:  # Only insert valid results
+    #            results.append(result)
+                
     collection_main.insert_many(results) 
     print(f'Processed {len(results)} images of total {length} images.....{time.ctime()}')
     return JSONResponse(content={'err': 'Done Uploading'})
