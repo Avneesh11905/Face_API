@@ -168,20 +168,19 @@ def process_image(img_path):
     
 
 @app.post('/upload-folder')
-async def upload_folder(file: UploadFile = File(...)):
+async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
     """
     for organizer to upload folder of images
 
     will create a folder named 'results
         args:
-            EvnetId: str = 'EventId'
-            file: file = 'Attendee_Username' .jpg .jpeg .png
+            EvnetId: str = 
         
         function:
-            makes a 'results' folder and stores resulting images in a .zip file
+           
         
         returns:
-            '{Attendee_Username}.zip' folder of attendees images 
+            
 
     """
     print('Received request')
@@ -189,8 +188,9 @@ async def upload_folder(file: UploadFile = File(...)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     if not file.filename.endswith('.zip'):
         return JSONResponse(content={'err':'file format not supported'})
-    base , _ = os.path.splitext(file.filename)
-    UPLOAD_INSTANCE = f'{UPLOAD_DIR}/{base}'  
+    
+    UPLOAD_INSTANCE = f'{UPLOAD_DIR}/{EventId}'  
+    
     with zipfile.ZipFile(file.file, "r") as zip_ref:
         zip_ref.extractall(UPLOAD_INSTANCE)
     EVENT_ID = file.filename.strip('.zip')   
