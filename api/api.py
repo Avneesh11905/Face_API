@@ -170,8 +170,7 @@ def process_image(img_path):
 async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
     """
     for organizer to upload folder of images
-
-    will create a folder named 'results
+    
         args:
             EvnetId: str = Event-Code
             file: File = .zip file of event images
