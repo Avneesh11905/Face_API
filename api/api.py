@@ -63,7 +63,8 @@ def delete_folder(folder_path):
     API Endpoints:
         http://localhost:8000/attendee-data    ->   for attendee to upload image of himself/herself , EventId
         http://localhost:8000/upload-folder    ->   for organizer to upload .zip file 
-
+        http://localhost:8000/download-zip     ->   for attendee to download .zip file 
+        
 
 """
 
