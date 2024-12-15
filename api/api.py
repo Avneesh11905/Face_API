@@ -107,7 +107,6 @@ async def attendee_data(EventId:str = Form(...),file: UploadFile = File(...)  ):
 
     collection = MainDataBase[EventId]                                      #getting Event collection based on EventId
     
-    
     base , _ = os.path.splitext(file.filename)
     USER_DEST = f'./results/{base}'                                         #folder for storing attendee images with name {Attendee_Username}
     os.makedirs(USER_DEST, exist_ok=True)    
@@ -137,7 +136,7 @@ async def attendee_data(EventId:str = Form(...),file: UploadFile = File(...)  ):
 
 # sending a zip file as response
 @app.post('/download-zip')
-def download(Username:str = Form(...)):
+async def download(Username:str = Form(...)):
     USER_DEST = f'./results/{Username}.zip'
     if not os.path.exists(USER_DEST):
         raise HTTPException(status_code=404, detail="File not found")
