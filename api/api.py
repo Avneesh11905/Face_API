@@ -174,13 +174,13 @@ async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
 
     will create a folder named 'results
         args:
-            EvnetId: str = 
-        
+            EvnetId: str = Event-Code
+            file: File = .zip file of event images
         function:
-           
+           save the image file to db and make encodings of images
         
         returns:
-            
+            done response
 
     """
     print('Received request')
