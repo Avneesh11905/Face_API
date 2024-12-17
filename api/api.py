@@ -118,7 +118,7 @@ async def attendee_data(EventId:str = Form(...),file: UploadFile = File(...)  ):
         img_name = Encoding['_id']
         encodings = np.array(Encoding['encoding']) 
         for encoding in encodings:                          
-            result =fr.compare_faces([attendee_encoding],encoding,tolerance=0.4)      #checking if any encoding in image matches to attendees image 
+            result =fr.compare_faces([attendee_encoding],encoding,tolerance=0.5)      #checking if any encoding in image matches to attendees image 
     
             if result[0]:                                                 #if the encoding matches the image will be copied to ./results/{Attendee_name} folder 
                 print(img_name)
@@ -156,16 +156,16 @@ async def download(Username:str = Form(...)):
 
 
 def process_image(img_path):
-        """Process a single image and return data to insert into MongoDB."""
-    
-        img_name = os.path.basename(img_path)
-        image = fr.load_image_file(img_path)
-        img_loc = fr.face_locations(image,0)
-        img_encodings = fr.face_encodings(image, img_loc )
-        encoding_list = [list(encoding) for encoding in img_encodings]
-        print(img_name)
-        return {'_id': img_name, 'encoding': encoding_list}
-    
+    """Process a single image and return data to insert into MongoDB."""
+
+    img_name = os.path.basename(img_path)
+    image = fr.load_image_file(img_path)
+    img_loc = fr.face_locations(image,0)
+    img_encodings = fr.face_encodings(image, img_loc )
+    encoding_list = [list(encoding) for encoding in img_encodings]
+    print(img_name)
+    return {'_id': img_name, 'encoding': encoding_list}
+
 
 @app.post('/upload-folder')
 async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
@@ -192,7 +192,7 @@ async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
     
     with zipfile.ZipFile(file.file, "r") as zip_ref:
         zip_ref.extractall(UPLOAD_INSTANCE)
-    EVENT_ID = file.filename.strip('.zip')   
+    EVENT_ID = EventId 
                                    
     collection_main = MainDataBase[EVENT_ID]
     collection_main.drop()  # Clear existing data
@@ -210,10 +210,10 @@ async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
     max_worker = os.cpu_count()-4
     results =[]
     length = len(image_paths)
-    img_num = 12    
+    img_num = 8    
 
     print(f'Start processing...{time.ctime()}')
-    for idx in range(0,len(image_paths),img_num):
+    for idx in range(0,length,img_num):
         num_img = image_paths[idx:idx+img_num]
         with ProcessPoolExecutor(max_workers=max_worker) as executor:
             futures = {executor.submit(process_image, img_path): img_path for img_path in num_img}
@@ -223,7 +223,7 @@ async def upload_folder(EventId:str = Form(...),file: UploadFile = File(...)):
                 result = future.result()
                 if result:  # Only insert valid results
                     results.append(result)
-    #with ProcessPoolExecutor(max_workers=max_worker) as executor:
+    # with ProcessPoolExecutor(max_workers=max_worker) as executor:
     #    futures = {executor.submit(process_image, img_path): img_path for img_path in image_paths}
         
     #    # Collect results and insert them into MongoDB
